@@ -79,11 +79,11 @@ HubSpot.GetDataPerPage = (url, offset) =>
 HubSpot.GetPagedData = (url) =>
     let
         jobsJsonPaginated = List.Generate( () => 
-                        [pageResult = null, nextOffset = 0, counter = 1],
-                        each [counter] <= 1 or [nextOffset] <> 0,
-                        each [pageResult = try HubSpot.GetDataPerPage(url, [nextOffset])                                                                         otherwise null, 
+                        [pageResult = null, nextOffset = 0, hasMore=true],
+                        each [hasMore] = true,
+                        each [pageResult = try HubSpot.GetDataPerPage(url, [nextOffset]) 
                                 nextOffset = try pageResult[offset] otherwise 0,
-                                counter = [counter] + 1],
+                                hasMore = try pageResult[#"has-more"] otherwise false],
                         each [pageResult]),
         
         jobsJsonPaginated2 = List.Skip(jobsJsonPaginated, 1)
@@ -270,11 +270,11 @@ HubSpot.GetContactsDataPerPage = (url, offset) =>
 HubSpot.GetContactsPagedData = (url) =>
     let
         jobsJsonPaginated = List.Generate( () => 
-                        [pageResult = null, nextOffset = 0, counter = 1],
-                        each [counter] <= 1 or [nextOffset] <> 0,
+                        [pageResult = null, nextOffset = 0, hasMore=true],
+                        each [hasMore] = true,
                         each [pageResult = try HubSpot.GetContactsDataPerPage(url, [nextOffset])                                                                         otherwise null, 
                                 nextOffset = try pageResult[#"vid-offset"] otherwise 0,
-                                counter = [counter] + 1],
+                                hasMore = try pageResult[#"has-more"] otherwise false],
                         each [pageResult]),
         
         jobsJsonPaginated2 = List.Skip(jobsJsonPaginated, 1)
